@@ -11,22 +11,22 @@ class searchController extends Controller
     {
         // search keyword
         $kw = $request->q;
-        if (empty($kw)) {
-            // Display All data with pagination if no keyword to search
-            $customers = customer::paginate(5);
-        } else {
+        // if (empty($kw)) {
+        //     // Display All data with pagination if no keyword to search
+        //     $customers = customer::paginate(5);
+        // } else {
             // Display Filtered data with pagination if keyword exists
             $customers = customer::where('name', 'like', "%{$kw}%")
                 ->paginate(5)
                 ->appends(['q' => "{$kw}"])
-                ->withPath('/')
+                ->withPath('/customer')
                 ->withQueryString();
-        }
+        // }
 
         // converting array to laravel collection
         $customersCollection = collect($customers);
         // merging queried data with pagination links HTML
-        $customersCollection = $customersCollection->merge(['pagination_links' => (string) $customers->links()]);
+        $customersCollection = $customersCollection->merge(['pagination_links' => (string) $customers->onEachSide(2)->links()]);
         // returning the response data as JSON string
         return collect(["customers" => $customersCollection->all()])->toJson();
     }

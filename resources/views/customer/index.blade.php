@@ -18,7 +18,7 @@
                         <div class="search-box">
                             <i class="material-icons">&#xE8B6;</i>
                             <input type="text" class="form-control" placeholder="search" id="searchCustomer"
-                                name="search">
+                                name="search" value="{{ session('last_search') }}">
                             <span id="customerList"></span>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
                 </tbody>
             </table>
             <div class="clearfix" id="pagination-links">
-                {{ $customers->links() }}
+                {{ $customers->onEachSide(2)->links() }}
             </div>
         </div>
     </div>
@@ -175,9 +175,8 @@
                                 }
                             }
                             // Update Pagination link
-                            if (resp.customers.pagination_links)
+                            if (!!resp.customers.pagination_links)
                                 paginationLink.html(resp.customers.pagination_links)
-                            console.log('datanya', resp.customers);
                         }
                     }
                 })

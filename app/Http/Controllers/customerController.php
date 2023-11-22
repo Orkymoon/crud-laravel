@@ -12,15 +12,9 @@ class customerController extends Controller
      */
     public function index(Request $request)
     {
-        // $query = $request->get('query');
-        // $customers = customer::where('name', 'LIKE', '%' . $query . '%')->paginate(5);
-
-
-        // return view('customer.index', compact('customers'))
-        //     ->with('i', (request()->input('page', 1) - 1) * 5);
-
         // search keyword
         $kw = $request->q;
+        session(['last_search' => $kw]);
 
         if (empty($kw)) {
             // Display All data with pagination if no keyword to search
@@ -30,7 +24,7 @@ class customerController extends Controller
             $customers = customer::where('name', 'like', "%{$kw}%")
                 ->paginate(5)
                 ->appends(['q' => "{$kw}"])
-                ->withPath('/')
+                ->withPath('/customer')
                 ->withQueryString();
         }
         // render page view
