@@ -17,8 +17,8 @@
                     <div class="col-sm-4">
                         <div class="search-box">
                             <i class="material-icons">&#xE8B6;</i>
-                            <input type="text" class="form-control" placeholder="search" id="searchCustomer"
-                                name="search" value="{{ session('last_search') }}">
+                            <input type="text" class="form-control" placeholder="search" id="searchCustomer" name="search"
+                                value="{{ session('last_search') }}">
                             <span id="customerList"></span>
                         </div>
                     </div>
@@ -40,14 +40,14 @@
                 <tbody>
                     @foreach ($customers as $customer)
                         <tr>
-                            <td>{{ ++$i }}</td>
+                            <td class="text-center">{{ ++$i }}</td>
                             <td>{{ $customer->name }}</td>
                             <td>{{ $customer->address }}</td>
                             <td>{{ $customer->city }}</td>
                             <td>{{ $customer->pincode }}</td>
                             <td>{{ $customer->country }}</td>
                             <td>
-                                <form action="{{ route('customer.destroy', $customer->id) }}" method="delete">
+                                <form action="{{ route('customer.destroy', $customer->id) }}" method="post">
                                     <a href="#" class="view" title="View" data-toggle="tooltip"><i
                                             class="material-icons">&#xE417;</i></a>
                                     <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i
@@ -101,7 +101,8 @@
                 } else {
                     if (searchTxt != "") {
                         // Update location URL
-                        history.pushState({}, "", `{{ URL::to('/customer') }}?q=${encodeURIComponent(searchTxt)}`)
+                        history.pushState({}, "",
+                            `{{ URL::to('/customer') }}?q=${encodeURIComponent(searchTxt)}`)
                     } else {
                         // Update location URL
                         history.pushState({}, "", `{{ URL::to('/customer') }}`)
@@ -134,12 +135,15 @@
                             paginationLink.html('')
                             if (!!resp.customers.data) {
                                 // Loop the searched data
-                                Object.values(resp.customers.data).map(customer => {
+                                Object.values(resp.customers.data).map((customer, index) => {
                                     // creating new table row
                                     var tr = $('<tr>')
+                                    var deleteCustomerUrl =
+                                        `{{ URL::to('/customer') }}/${customer.id}`;
+
                                     // creting the new columns and data of the row
                                     tr.append(
-                                        `<td class="text-center">${customer.id}</td>`
+                                        `<td class="text-center">${index + 1}</td>`
                                     )
                                     tr.append(`<td>${customer.name}</td>`)
                                     tr.append(`<td>${customer.address}</td>`)
@@ -148,7 +152,7 @@
                                     tr.append(`<td>${customer.country}</td>`)
                                     tr.append(
                                         `<td>
-                                            <form action="{{ route('customer.destroy', $customer->id) }}" method="delete">
+                                            <form action="${deleteCustomerUrl}" method="post">
                                                 <a href="#" class="view" title="View" data-toggle="tooltip"><i
                                                         class="material-icons">&#xE417;</i></a>
                                                 <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i

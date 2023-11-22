@@ -18,11 +18,11 @@ class customerController extends Controller
 
         if (empty($kw)) {
             // Display All data with pagination if no keyword to search
-            $customers = customer::paginate(5);
+            $customers = customer::paginate(10);
         } else {
             // Display Filtered data with pagination if keyword exists
             $customers = customer::where('name', 'like', "%{$kw}%")
-                ->paginate(5)
+                ->paginate(10)
                 ->appends(['q' => "{$kw}"])
                 ->withPath('/customer')
                 ->withQueryString();
