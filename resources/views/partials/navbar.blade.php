@@ -10,8 +10,8 @@
             <div class="navbar-nav">
                 <a class="nav-link active" aria-current="page" href="{{ route('customer.create') }}">Create</a>
                 <a class="nav-link active" aria-current="page" href="{{ route('customer.index') }}">Read</a>
-                <a class="nav-link active" aria-current="page" href="{{ route('customer.index') }}">Update</a>
-                <a class="nav-link active" aria-current="page" href="{{ route('customer.index') }}">Delete</a>
+                <a class="nav-link active" aria-current="page" href="">Update</a>
+                <a class="nav-link active" aria-current="page" href="">Delete</a>
             </div>
         </div>
     </div>

@@ -15,12 +15,16 @@ class searchController extends Controller
         //     // Display All data with pagination if no keyword to search
         //     $customers = customer::paginate(5);
         // } else {
-            // Display Filtered data with pagination if keyword exists
-            $customers = customer::where('name', 'like', "%{$kw}%")
-                ->paginate(10)
-                ->appends(['q' => "{$kw}"])
-                ->withPath('/customer')
-                ->withQueryString();
+        // Display Filtered data with pagination if keyword exists
+        $customers = customer::where('name', 'like', "%{$kw}%")
+            ->orWhere('address', 'like', "%{$kw}%")
+            ->orWhere('city', 'like', "%{$kw}%")
+            ->orWhere('pincode', 'like', "%{$kw}%")
+            ->orWhere('country', 'like', "%{$kw}%")
+            ->paginate(10)
+            ->appends(['q' => "{$kw}"])
+            ->withPath('/customer')
+            ->withQueryString();
         // }
 
         // converting array to laravel collection

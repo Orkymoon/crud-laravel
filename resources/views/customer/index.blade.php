@@ -1,14 +1,10 @@
 @extends('layouts.main')
 
-@section('title', 'Dashboard')
+@section('title', 'Read')
 
 @section('content')
     <div class="table-responsive">
         <div class="table-wrapper">
-            @if ($message = Session::get('success'))
-                <p>{{ $message }}</p>
-            @endif
-
             <div class="table-title">
                 <div class="row">
                     <div class="col-sm-8">
@@ -18,7 +14,7 @@
                         <div class="search-box">
                             <i class="material-icons">&#xE8B6;</i>
                             <input type="text" class="form-control" placeholder="search" id="searchCustomer" name="search"
-                                value="{{ session('last_search') }}">
+                                value="{{ Session::get('last_search') }}">
                             <span id="customerList"></span>
                         </div>
                     </div>
@@ -50,13 +46,12 @@
                                 <form action="{{ route('customer.destroy', $customer->id) }}" method="post">
                                     <a href="#" class="view" title="View" data-toggle="tooltip"><i
                                             class="material-icons">&#xE417;</i></a>
-                                    <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i
-                                            class="material-icons">&#xE254;</i></a>
+                                    <a href="{{ route('customer.edit', $customer->id) }}" class="edit" title="Edit"
+                                        data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
                                     @csrf
                                     @method('delete')
-                                    <a href="#" class="delete" title="Delete" data-toggle="tooltip"
-                                        onclick="this.closest('form').submit();return false;"><i
-                                            class="material-icons">&#xE872;</i></a>
+                                    <a href="#" class="delete show-alert-delete-box" title="Delete"
+                                        data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
                                 </form>
                             </td>
                         </tr>
@@ -140,7 +135,8 @@
                                     var tr = $('<tr>')
                                     var deleteCustomerUrl =
                                         `{{ URL::to('/customer') }}/${customer.id}`;
-
+                                    var updateCustomerUrl =
+                                        `{{ URL::to('/customer') }}/${customer.id}/edit`;
                                     // creting the new columns and data of the row
                                     tr.append(
                                         `<td class="text-center">${index + 1}</td>`
@@ -155,7 +151,7 @@
                                             <form action="${deleteCustomerUrl}" method="post">
                                                 <a href="#" class="view" title="View" data-toggle="tooltip"><i
                                                         class="material-icons">&#xE417;</i></a>
-                                                <a href="#" class="edit" title="Edit" data-toggle="tooltip"><i
+                                                <a href="${updateCustomerUrl}" class="edit" title="Edit" data-toggle="tooltip"><i
                                                         class="material-icons">&#xE254;</i></a>
                                                 @csrf
                                                 @method('delete')
@@ -190,6 +186,36 @@
     <script>
         $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(document).on('click', '.show-alert-delete-box', function(event) {
+                var form = $(this).closest("form");
+
+                event.preventDefault();
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: "Your file has been deleted.",
+                            icon: "success"
+                        }).then((result) => {
+                            if (result.isConfirmed){
+                                form.submit();
+                            }
+                        });
+                    }
+                });
+            });
         });
     </script>
 @endsection

@@ -22,6 +22,10 @@ class customerController extends Controller
         } else {
             // Display Filtered data with pagination if keyword exists
             $customers = customer::where('name', 'like', "%{$kw}%")
+                ->orWhere('address', 'like', "%{$kw}%")
+                ->orWhere('city', 'like', "%{$kw}%")
+                ->orWhere('pincode', 'like', "%{$kw}%")
+                ->orWhere('country', 'like', "%{$kw}%")
                 ->paginate(10)
                 ->appends(['q' => "{$kw}"])
                 ->withPath('/customer')
@@ -53,7 +57,9 @@ class customerController extends Controller
 
         ];
         customer::create($data);
-        return 'aku adalah orang bangsatt';
+
+        toastr()->success('Data has been saved successfully!');
+        return redirect()->to('customer');
     }
 
     /**
@@ -69,7 +75,8 @@ class customerController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = customer::where('id', $id)->first();
+        return view('customer.edit')->with('data', $data);
     }
 
     /**
@@ -77,16 +84,35 @@ class customerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // $request->validate([
+        //     'nama' => 'required',
+        //     'address' => 'required',
+        // ], [
+        //     'nama.required' => 'Nama wajib diisi',
+        //     'address.required' => 'Jurusan wajib diisi',
+        // ]);
+        $data = [
+            'name' => $request->name,
+            'address' => $request->address,
+            'city' => $request->city,
+            'pincode' => $request->pincode,
+            'country' => $request->country
+        ];
+        customer::where('id', $id)->update($data);
+
+        // dd($data);
+        toastr()->success('Data has been successfully updated');
+        return redirect()->to('customer');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(customer $customer)
+    public function destroy(Request $request, customer $customer)
     {
         $customer->delete();
-        return redirect('customer')
-            ->with('success', 'Customer deleted successfully');
+
+        toastr()->success('Data has been successfully deleted');
+        return redirect()->back();
     }
 }
