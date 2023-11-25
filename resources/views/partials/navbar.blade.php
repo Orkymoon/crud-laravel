@@ -11,7 +11,7 @@
                 <a class="nav-link active" aria-current="page" href="{{ route('customer.create') }}">Create</a>
                 <a class="nav-link active" aria-current="page" href="{{ route('customer.index') }}">Read</a>
                 <a class="nav-link active" aria-current="page" href="">Update</a>
-                <a class="nav-link active" aria-current="page" href="">Delete</a>
+                <a class="nav-link active show-input-delete-box" aria-current="page" href="">Delete</a>
             </div>
         </div>
     </div>

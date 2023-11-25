@@ -26,6 +26,7 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Name <i class="fa fa-sort"></i></th>
+                        <th scope="col">id</th>
                         <th scope="col">Address</th>
                         <th scope="col">City <i class="fa fa-sort"></i></th>
                         <th scope="col">Pin Code</th>
@@ -38,6 +39,7 @@
                         <tr>
                             <td class="text-center">{{ ++$i }}</td>
                             <td>{{ $customer->name }}</td>
+                            <td>{{ $customer->id }}</td>
                             <td>{{ $customer->address }}</td>
                             <td>{{ $customer->city }}</td>
                             <td>{{ $customer->pincode }}</td>
@@ -65,6 +67,11 @@
     </div>
 @endsection
 @section('script')
+    <script>
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
     <script>
         // Ajax Variable
         var search_ajax;
@@ -142,6 +149,7 @@
                                         `<td class="text-center">${index + 1}</td>`
                                     )
                                     tr.append(`<td>${customer.name}</td>`)
+                                    tr.append(`<td>${customer.id}</td>`)
                                     tr.append(`<td>${customer.address}</td>`)
                                     tr.append(`<td>${customer.city}</td>`)
                                     tr.append(`<td>${customer.pincode}</td>`)
@@ -155,9 +163,8 @@
                                                         class="material-icons">&#xE254;</i></a>
                                                 @csrf
                                                 @method('delete')
-                                                <a href="#" class="delete" title="Delete" data-toggle="tooltip"
-                                                    onclick="this.closest('form').submit();return false;"><i
-                                                        class="material-icons">&#xE872;</i></a>
+                                                <a href="#" class="delete show-alert-delete-box" title="Delete"
+                                                        data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
                                             </form>
                                         </td>`
                                     )
@@ -169,7 +176,7 @@
                                     // Display Message if no data found that is match to the keyword
                                     var tr = $('<tr>')
                                     tr.append(
-                                        `<td class="text-center" colspan="7">No search keyword match found.</td>`
+                                        `<td class="text-center" colspan="8">No search keyword match found.</td>`
                                     )
                                     tblBody.append(tr)
                                 }
@@ -182,11 +189,6 @@
                 })
             })
         })
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('[data-toggle="tooltip"]').tooltip();
-        });
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
@@ -206,11 +208,116 @@
                     if (result.isConfirmed) {
                         Swal.fire({
                             title: "Deleted!",
-                            text: "Your file has been deleted.",
+                            text: "Your data has been deleted.",
                             icon: "success"
                         }).then((result) => {
-                            if (result.isConfirmed){
+                            if (result.isConfirmed) {
                                 form.submit();
+                            }
+                        });
+                    } else if (result.isDismissed) {
+                        swal.fire({
+                            title: "Cancelled",
+                            text: "Your imaginary data is safe :)",
+                            icon: "error"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        // Temukan elemen dengan kelas "delete" dan tambahkan event listener
+        document.querySelectorAll('.show-input-delete-box').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // const id = this.getAttribute('data-id'); // Dapatkan ID dari atribut data-id
+
+                Swal.fire({
+                    title: 'Input ID',
+                    // text: 'You won't be able to revert this!',
+                    // icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Next",
+                    input: 'number',
+                    // inputLabel: 'Input ID', // Label untuk input
+                    inputPlaceholder: 'Input ID', // Placeholder untuk input
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return 'ID cannot be empty!';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const inputId = result.value;
+                        Swal.fire({
+                            title: "Are you sure?",
+                            text: "You won't be able to revert this!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes, delete it!"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: "Your data has been deleted.",
+                                    icon: "success"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+
+                                        // Mengambil nilai dari input di SweetAlert2
+                                        // Lakukan sesuatu dengan nilai inputId, misalnya, hapus data dengan ID tersebut
+                                        // const form = document.createElement('form');
+                                        // form.setAttribute('action',
+                                        //     `/customer/${inputId}`);
+                                        // form.setAttribute('method', 'POST');
+                                        // form.innerHTML = `
+                                    // @csrf
+                                    // @method('DELETE') `;
+                                        // document.body.appendChild(form);
+                                        // form.submit();
+                                        fetch(`/customer/${inputId}`)
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    // Jika respons OK, ID ada di database, maka lanjutkan dengan penghapusan
+                                                    const form = document
+                                                        .createElement('form');
+                                                    form.setAttribute('action',
+                                                        `/customer/${inputId}`
+                                                        );
+                                                    form.setAttribute('method',
+                                                        'POST');
+                                                    form.innerHTML = `
+                                                    @csrf
+                                                    @method('DELETE')
+                                                         `;
+                                                    document.body.appendChild(
+                                                        form);
+                                                    form.submit();
+                                                } else {
+                                                    // Jika respons tidak OK, tampilkan pesan error menggunakan SweetAlert2
+                                                    Swal.fire('Error!',
+                                                        'ID not found in the database.',
+                                                        'error');
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Error:', error);
+                                            });
+
+                                    }
+                                });
+                            } else if (result.isDismissed) {
+                                swal.fire({
+                                    title: "Cancelled",
+                                    text: "Your imaginary data is safe :)",
+                                    icon: "error"
+                                });
                             }
                         });
                     }
